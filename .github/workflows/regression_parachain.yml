@@ -1,6 +1,6 @@
 on: pull_request
 
-name: CI3
+name: regression_parachain # 测试平行链
 jobs:
   test:
     strategy:
@@ -36,9 +36,7 @@ jobs:
           git clone https://github.com/OpenAtomFoundation/xupercore.git
           cd xuperchain && echo "replace github.com/xuperchain/xupercore => ../xupercore" >> go.mod
           make && make testnet && cd testnet/
-          sed -i' ' 's#level: debug#level: warn#g' node1/conf/log.yaml
-          sed -i' ' 's#level: debug#level: warn#g' node2/conf/log.yaml
-          sed -i' ' 's#level: debug#level: warn#g' node3/conf/log.yaml
+          sed -i' ' 's#level: debug#level: warn#g' node*/conf/log.yaml
           sh control_all.sh start
           pwd
           cd ../.. && cp xuperchain/output/bin/xchain-cli client/bin/

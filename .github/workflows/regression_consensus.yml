@@ -1,6 +1,6 @@
 on: pull_request
 
-name: CI1
+name: regression_consensus # 测试共识
 jobs:
   test:
     strategy:
@@ -20,12 +20,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Lint with flake8
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Install Go
         uses: actions/setup-go@v1
         with:
@@ -36,13 +30,11 @@ jobs:
           git clone https://github.com/OpenAtomFoundation/xupercore.git
           cd xuperchain && echo "replace github.com/xuperchain/xupercore => ../xupercore" >> go.mod
           make && make testnet && cd testnet/
-          sed -i' ' 's#level: debug#level: warn#g' node1/conf/log.yaml
-          sed -i' ' 's#level: debug#level: warn#g' node2/conf/log.yaml
-          sed -i' ' 's#level: debug#level: warn#g' node3/conf/log.yaml
+          sed -i' ' 's#level: debug#level: warn#g' node*/conf/log.yaml
           sh control_all.sh start
           pwd
           cd ../.. && cp xuperchain/output/bin/xchain-cli client/bin/
           sleep 15
       - name: Test with pytest
         run: |
-          bash run_case.sh batch1
+          bash run_case.sh batch2
